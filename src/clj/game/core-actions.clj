@@ -5,7 +5,7 @@
 (declare card-str can-rez? corp-install enforce-msg gain-agenda-point get-remote-names
          jack-out move name-zone play-instant purge resolve-select run has-subtype?
          runner-install trash update-breaker-strength update-ice-in-server update-run-ice win
-         can-run-server? can-score?)
+         can-run-server? can-score? play-sfx)
 
 ;;; Neutral actions
 (defn play

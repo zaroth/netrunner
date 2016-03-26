@@ -2,7 +2,7 @@
 
 (declare card-init card-str deactivate enforce-msg gain-agenda-point get-agenda-points
          handle-end-run is-type? resolve-steal-events show-prompt untrashable-while-rezzed?
-         in-corp-scored? update-all-ice win prevent-draw)
+         in-corp-scored? update-all-ice win prevent-draw installed? play-sfx rezzed? has-subtype?)
 
 ;;;; Functions for applying core Netrunner game rules.
 
@@ -211,6 +211,14 @@
         moved-card (move state (to-keyword (:side card)) card :discard {:keep-server-alive keep-server-alive})]
     (when-let [trash-effect (:trash-effect cdef)]
       (resolve-ability state side trash-effect moved-card (cons cause targets)))
+    ;; April Fool's trash sound ;-)
+    (when (and (installed? card)
+               (rezzed? card)
+               (or (has-subtype? card "Executive")
+                   (has-subtype? card "Bioroid")
+                   (has-subtype? card "Clone")
+                   (has-subtype? card "Sysop")))
+      (play-sfx state "wilhelm"))
     (swap! state update-in [:per-turn] dissoc (:cid moved-card))))
 
 (defn trash

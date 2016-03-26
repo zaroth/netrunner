@@ -117,6 +117,13 @@
       (aset input "value" "")
       (.focus input))))
 
+(defn play-sfx
+  "Plays a list of sounds one after another."
+  [sfx]
+  (when-not (empty? sfx)
+    (.play (.getElementById js/document (first sfx)))
+    (play-sfx (rest sfx))))
+
 (defn toast
   "Display a toast warning with the specified message.
   Sends a command to clear any server side toasts."
@@ -793,6 +800,30 @@
     ;; remove restricted servers from all servers to just return allowed servers
     (remove (set restricted-servers) (set servers))))
 
+(def soundbank
+  (let [audio-sfx
+        (fn [name]
+          [:audio {:id name}
+           [:source {:src (str "/sound/" name ".ogg") :type "audio/ogg"}]
+           [:source {:src (str "/sound/" name ".mp3") :type "audio/mp3"}]])]
+    (list
+      (audio-sfx "wilhelm")
+      )))
+
+(defn update-audio [{:keys [gameid sfx sfx-current-id] :as cursor} owner]
+  ;; When it's the first game played with this state or when the sound history comes from different game, we skip the cacophony
+  (let [sfx-last-played (om/get-state owner :sfx-last-played)]
+    (when (and (not (nil? sfx-last-played))
+               (= gameid (:gameid sfx-last-played)))
+      ;; Skip the SFX from queue with id smaller than the one last played, queue the rest
+      (let [sfx-to-play (reduce (fn [sfx-list {:keys [id name]}]
+                                  (if (> id (:id sfx-last-played))
+                                    (conj sfx-list name)
+                                    sfx-list)) [] sfx)]
+        (play-sfx sfx-to-play))))
+  ;; Remember the most recent sfx id as last played so we don't repeat it later
+  (om/set-state! owner :sfx-last-played {:gameid gameid :id sfx-current-id}))
+
 (defn gameboard [{:keys [side gameid active-player run end-turn runner-phase-12 corp-phase-12 phase-32] :as cursor} owner]
   (reify
     om/IWillMount
@@ -809,7 +840,8 @@
         (set! (.-cursor (.-style (.-body js/document))) "url('/img/gold_crosshair.png') 12 12, crosshair")
         (set! (.-cursor (.-style (.-body js/document))) "default"))
       (doseq [{:keys [msg type options]} (get-in cursor [side :toast])]
-        (toast msg type options)))
+        (toast msg type options))
+      (update-audio cursor owner))
 
     om/IRenderState
     (render-state [this state]
@@ -818,6 +850,7 @@
          (let [me ((if (= side :runner) :runner :corp) cursor)
                opponent ((if (= side :runner) :corp :runner) cursor)]
            [:div.gameboard
+            soundbank
             [:div.mainpane
              (om/build zones {:player opponent :remotes (get-remotes (get-in cursor [:corp :servers]))})
              [:div.centralpane
