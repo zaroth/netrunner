@@ -76,7 +76,8 @@
 (defn flatline [state]
   (when-not (:winner state)
     (system-msg state :runner "is flatlined")
-    (win state :corp "Flatline")))
+    (win state :corp "Flatline")
+    (play-sfx state :runner "wasted")))
 
 (defn damage-count
   "Calculates the amount of damage to do, taking into account prevention and boosting effects."
@@ -213,12 +214,16 @@
       (resolve-ability state side trash-effect moved-card (cons cause targets)))
     ;; April Fool's trash sound ;-)
     (when (and (installed? card)
-               (rezzed? card)
+               (or (and (card-is? card :side :runner)
+                        (not (:facedown card)))
+                   (and (card-is? card :side :corp)
+                        (rezzed? card)))
                (or (has-subtype? card "Executive")
                    (has-subtype? card "Bioroid")
                    (has-subtype? card "Clone")
-                   (has-subtype? card "Sysop")))
-      (play-sfx state "wilhelm"))
+                   (has-subtype? card "Sysop")
+                   (has-subtype? card "Connection")))
+      (play-sfx state side "wilhelm"))
     (swap! state update-in [:per-turn] dissoc (:cid moved-card))))
 
 (defn trash
@@ -342,7 +347,8 @@
                 (= (:counter-type card) "Virus"))
         (set-prop state :runner card :counter 0)))
     (update-all-ice state side))
-  (trigger-event state side :purge))
+  (trigger-event state side :purge)
+  (play-sfx state side "purge"))
 
 (defn mill
   "Force the discard of n cards from :deck to :discard."
@@ -370,4 +376,4 @@
 (defn init-trace-bonus
   "Applies a bonus base strength of n to the next trace attempt."
   [state side n]
-  (swap! state update-in [:bonus :trace] (fnil #(+ % n) 0)))
+  (swap! state update-in [:bonus :tracetrace] (fnil #(+ % n) 0)))

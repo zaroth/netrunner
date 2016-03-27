@@ -49,7 +49,20 @@
 
 (def cards-assets
   {"Adonis Campaign"
-   (campaign 12 3)
+   (let [ability {:msg (str "gain " 3 " [Credits]")
+                  :counter-cost 3
+                  :once :per-turn
+                  :req (req (:corp-phase-12 @state))
+                  :label (str "Gain " 3 " [Credits] (start of turn)")
+                  :effect (req (gain state :corp :credit 3)
+                               (when (zero? (:counter card))
+                                 (trash state :corp card)))}]
+     {:data {:counter-type "Credit"}
+      :effect (effect (add-prop card :counter 12)
+                      (play-sfx "adonis"))
+      :derezzed-events {:runner-turn-ends corp-rez-toast}
+      :events {:corp-turn-begins ability}
+      :abilities [ability]})
 
    "Advanced Assembly Lines"
    {:effect (effect (gain :credit 3))
@@ -249,7 +262,20 @@
                          :effect (effect (trash-cost-bonus 1))}}}
 
    "Eve Campaign"
-   (campaign 16 2)
+   (let [ability {:msg (str "gain " 2 " [Credits]")
+                  :counter-cost 2
+                  :once :per-turn
+                  :req (req (:corp-phase-12 @state))
+                  :label (str "Gain " 2 " [Credits] (start of turn)")
+                  :effect (req (gain state :corp :credit 2)
+                               (when (zero? (:counter card))
+                                 (trash state :corp card)))}]
+     {:data {:counter-type "Credit"}
+      :effect (effect (add-prop card :counter 16)
+                      (play-sfx "eve"))
+      :derezzed-events {:runner-turn-ends corp-rez-toast}
+      :events {:corp-turn-begins ability}
+      :abilities [ability]})
 
    "Executive Boot Camp"
    {:derezzed-events {:runner-turn-ends corp-rez-toast}
@@ -739,7 +765,8 @@
                               card targets))}}}}
 
    "Shock!"
-   {:access {:msg "do 1 net damage" :effect (effect (damage :net 1 {:card card}))}}
+   {:access {:msg "do 1 net damage" :effect (effect (damage :net 1 {:card card})
+                                                    (play-sfx "shock"))}}
 
    "Snare!"
    {:access {:req (req (not= (first (:zone card)) :discard))
@@ -751,7 +778,8 @@
                                  :yes-ability {:cost [:credit 4]
                                                :msg "do 3 net damage and give the Runner 1 tag"
                                                :effect (effect (damage :net 3 {:card card})
-                                                               (tag-runner :runner 1))}}}
+                                                               (tag-runner :runner 1)
+                                                               (play-sfx "snare"))}}}
                                card nil))}}
 
    "Space Camp"

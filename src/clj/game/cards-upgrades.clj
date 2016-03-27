@@ -61,13 +61,16 @@
    {:events {:pass-ice {:req (req (and this-server
                                        (= (:position run) 1))) ; trigger when last ice passed
                         :msg "start a Psi game"                        
-                        :psi {:not-equal {:msg "end the run" :effect (effect (end-run))}}}
+                        :psi {:not-equal {:msg "end the run" :effect (effect (end-run)
+                                                                             (play-sfx "caprice-denied"))}}}
              :run {:req (req (and this-server
                                   (= (:position run) 0))) ; trigger on unprotected server
                    :msg "start a Psi game"
-                   :psi {:not-equal {:msg "end the run" :effect (effect (end-run))}}}}
+                   :psi {:not-equal {:msg "end the run" :effect (effect (end-run)
+                                                                        (play-sfx "caprice-denied"))}}}}
     :abilities [{:msg "start a Psi game"
-                 :psi {:not-equal {:msg "end the run" :effect (effect (end-run))}}}]}
+                 :psi {:not-equal {:msg "end the run" :effect (effect (end-run)
+                                                                      (play-sfx "caprice-denied"))}}}]}
 
    "ChiLo City Grid"
    {:events {:successful-trace {:req (req this-server)

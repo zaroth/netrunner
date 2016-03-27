@@ -463,6 +463,7 @@
   [state side args]
   (end-run state side)
   (system-msg state side "jacks out")
+  (play-sfx state side "jack-out")
   (trigger-event state side :jack-out))
 
 (defn handle-end-run

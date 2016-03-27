@@ -49,7 +49,7 @@
   "Adds a sound effect to play to the sfx queue.
   Each SFX comes with a unique ID, so each client can track for themselves which sounds have already been played.
   The sfx queue has size limited to 3 to limit the sound torrent tabbed out or lagged players will experience."
-  ([state sfx]
+  ([state side sfx]
    (when-let [current-id (get-in @state [:sfx-current-id])]
      (do
        (swap! state update-in [:sfx] #(take 3 (conj % {:id (inc current-id) :name sfx})))

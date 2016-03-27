@@ -31,7 +31,8 @@
   (when (and (not (get-in @state [side :register :cannot-draw])) (pay state side nil :click 1))
     (system-msg state side "spends [Click] to draw a card")
     (draw state side)
-    (trigger-event state side (if (= side :corp) :corp-click-draw :runner-click-draw))))
+    (trigger-event state side (if (= side :corp) :corp-click-draw :runner-click-draw))
+    (play-sfx state side "click-card")))
 
 (defn click-credit
   "Click to gain 1 credit."
@@ -39,7 +40,8 @@
   (when (pay state side nil :click 1)
     (system-msg state side "spends [Click] to gain 1 [Credits]")
     (gain state side :credit 1)
-    (trigger-event state side (if (= side :corp) :corp-click-credit :runner-click-credit))))
+    (trigger-event state side (if (= side :corp) :corp-click-credit :runner-click-credit))
+    (play-sfx state side "click-credit-mario")))
 
 (defn change
   "Increase/decrease a player's property (clicks, credits, MU, etc.) by delta."
@@ -246,6 +248,8 @@
               points (get-agenda-points state :corp c)]
           (system-msg state :corp (str "scores " (:title c) " and gains " points
                                        " agenda point" (when (> points 1) "s")))
+          (when (= "01081"(:code card))
+            (play-sfx state side "astro-score"))
           (swap! state update-in [:corp :register :scored-agenda] #(+ (or % 0) points))
           (gain-agenda-point state :corp points)
           (set-prop state :corp c :advance-counter 0)
