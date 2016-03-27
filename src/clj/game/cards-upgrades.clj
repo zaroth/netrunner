@@ -167,7 +167,8 @@
                                    :choices {:req #(and (ice? %)
                                                         (rezzed? %))}
                                    :msg (msg "resolve a subroutine on " (:title target))}}
-                 :effect (effect (trash card))}]}
+                 :effect (effect (trash card))}]
+    :effect (effect (play-sfx "marcus-batty"))}
 
    "Midori"
    {:abilities

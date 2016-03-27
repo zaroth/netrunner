@@ -281,7 +281,8 @@
     (let [cost (pay state :runner nil :click 1)
           spent (build-spend-msg cost "make a run on")
           message (str spent server)]
-      (system-msg state :runner message))))
+      (system-msg state :runner message))
+    (play-sfx state side "click-run")))
 
 (defn remove-tag
   "Click to remove a tag."
