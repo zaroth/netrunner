@@ -6,7 +6,7 @@
 (def app-state (atom {}))
 
 (def help-data
-  "List of maps with FAQ about jinteki.net. Every section MUST have an :id here, so the links can work."
+  "List of maps with FAQ about weyland.meat. Every section MUST have an :id here, so the links can work."
   (list
     {:id "general"
      :title "General"
@@ -67,10 +67,10 @@
                         [:li [:code "/adv-counter n"] " - set advancement counters on a card to n (player's own cards only)"]
                         [:li [:code "/card-info"] " - display debug info about a card (player's own cards only)"]]]}
             {:id "documentation"
-             :title "Is there more documentation on how to use Jinteki.net?"
+             :title "Is there more documentation on how to use Weyland.meat?"
              :content [:p "Read the "
                        [:a {:href "https://github.com/mtgred/netrunner/wiki/Jinteki.net-Guide" :target "_blank"}
-                        "Jinteki.net Guide"] " on the GitHub wiki."]}
+                        "Weyland.meat Guide"] " on the GitHub wiki."]}
             )}
     {:id "beginners"
      :title "Beginners"
@@ -86,7 +86,7 @@
                              "There is also " [:a {:href "http://ancur.wikia.com/wiki/Project_ANCUR_Wiki"} "Project ANCUR"] ", which is a collection "
                              "of rulings (also unofficial) regarding various cards and game situations."])}
             {:id "firstgame"
-             :title "Can I play my first game on jinteki.net even though I'm a total beginner and never played in meatspace?"
+             :title "Can I play my first game on Weyland.meat even though I'm a total beginner and never played in meatspace?"
              :content [:p "Sure! Many players will be happy to play/teach a beginner if they know what they're getting into beforehand. "
                        "So just create a new game with name such as \"beginner here\" or \"core set only please\", someone "
                        "happy to play with a beginner should join after a while."]}
@@ -95,11 +95,11 @@
              :content (list [:p [:a {:href "https://netrunnerdb.com/"} "NetrunnerDB"] " is a good resource for finding decks of all kinds. "
                        "For finding decks consisting of core set only try setting some filters in "
                        [:a {:href "http://netrunnerdb.com/en/decklists/search#allowed_packs"} "the decklist search"] "."]
-                            [:p "Once you find a deck you like, export it in Jinteki.net's format (or plain text format if the "
+                            [:p "Once you find a deck you like, export it in Weyland.meat's format (or plain text format if the "
                              "site doesn't offer the former), copy and paste it into the deckbuilder."])}
             {:id "communities"
              :title "Where can I find other Netrunner players to talk to?"
-             :content [:p "Apart from the chatrooms here on Jinteki.net, here are a few links to online Netrunner communities:"
+             :content [:p "Apart from the chatrooms here on Weyland.meat, here are a few links to online Netrunner communities:"
                        [:ul
                         [:li [:a {:href "http://forum.stimhack.com/"} "Stimhack forums"]]
                         [:li [:a {:href "http://reddit.com/r/netrunner/"} "/r/netrunner subreddit"]]
@@ -112,15 +112,15 @@
             {:id "avatar"
              :title "How do I change my avatar?"
              :content [:p "Go to " [:a {:href "http://gravatar.com" :target "_blank"} "gravatar.com"]
-                       " and create an account with the same email as the one used to register on Jinteki.net."]}
+                       " and create an account with the same email as the one used to register on Weyland.meat."]}
             {:id "bestbrowser"
              :title "What is the best supported browser?"
              :content '([:p "Google Chrome or Firefox on a desktop or laptop is recommended. Safari should work fine too."]
                         [:p "There is limited support for tablet browsers. If you have too many cards to fit on the screen you might not able to see all of them."]
                         [:p "Using a phone is not recommended. The screen will most likely be too small to fit the gameboard."])}
             {:id "fullscreen"
-             :title "How to use jinteki.net in fullscreen mode on a tablet?"
-             :content [:p "Add jinteki.net to your homescreen as described "
+             :title "How to use weyland.meat in fullscreen mode on a tablet?"
+             :content [:p "Add weyland.meat to your homescreen as described "
                        [:a {:href "http://www.howtogeek.com/196087/how-to-add-websites-to-the-home-screen-on-any-smartphone-or-tablet/"} "here"]
                        ". If you tap on the homescreen icon, you will be in fullscreen."]}
             {:id "privatemsgs"
@@ -161,7 +161,7 @@
              :title "How do I install Adam's directives?"
              :content [:p "Adam's directives are installed automatically at the game start. However, every Adam deck needs to "
                        "put one copy of each directive in the deck in addition to your normal deck. Yes, that means that "
-                       "minimal Adam decksize on Jinteki.net is 48."]}
+                       "minimal Adam decksize on Weyland.meat is 48."]}
             {:id "napdmwl"
              :title "What is MWL and \"Tournament legal\"? Why is my deck marked as \"Casual play only\"?"
              :content (list
@@ -194,7 +194,7 @@
             {:id "touchproblems"
              :title "The website doesn't work well on my touchscreen device."
              :content [:p "Touchscreen devices are currently not supported. See answer to " [:a {:href "#bestbrowser"} "this question"]
-                       " for best browsers to use with Jinteki.net."]}
+                       " for best browsers to use with Weyland.meat."]}
             {:id "toomanyservers"
              :title "There are too many servers to fit on my screen."
              :content [:p "Decrease the zoom level of your browser and you should be able to see everything. If you are using "
@@ -202,8 +202,8 @@
                        [:a {:href "https://addons.mozilla.org/pl/firefox/addon/zoom-page/"} "Zoom Page addon"] " before the zoom works correctly."]}
             {:id "zerogames"
              :title "Whenever I connect to the site, I see there are 0 games in the lobby."
-             :content [:p "This is most likely a websocket issue. Check if your network filters let through traffic from ws.jinteki.net. "
-                       "Whitelisting *.jinteki.net should solve the problem."]}
+             :content [:p "This is most likely a websocket issue. Check if your network filters let through traffic from ws.weyland.meat. "
+                       "Whitelisting *.weyland.meat should solve the problem."]}
             )}
     {:id "getinvolved"
      :title "Getting Involved"
@@ -229,7 +229,7 @@
                              "need of some ideas, check out " [:a {:href "https://github.com/mtgred/netrunner/labels/easy" :target "_blank"} "issues marked 'easy' on GitHub"] "."]
                             [:p "After two of your PRs have been merged into the master branch, send an e-mail to "
                              [:a {:href "mailto:mtgred@gmail.com"} "mtgred@gmail.com"] " stating who you are on GitHub and ask for access "
-                             "to Jinteki.net Slack, so you can get in better contact with the dev team."])}
+                             "to Weyland.meat Slack, so you can get in better contact with the dev team."])}
             {:id "awesome"
              :title "Why is this site so awesome?"
              :content [:p "Because We Built It."]}
