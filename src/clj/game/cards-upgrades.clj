@@ -307,7 +307,8 @@
                                 (resolve-ability
                                   state side
                                   {:trace {:base (req (dec (count cards)))
-                                           :effect (effect (damage :net 3 {:card card}))
+                                           :effect (effect (play-sfx "self-destruct")
+                                                           (damage :net 3 {:card card}))
                                            :msg "do 3 net damage"}} card nil)))}]}
 
    "Shell Corporation"

@@ -849,6 +849,7 @@
                            (audio-sfx "paper-tripping")
                            (audio-sfx "purge")
                            (audio-sfx "scorch")
+                           (audio-sfx "self-destruct")
                            (audio-sfx "self-modifying-code")
                            (audio-sfx "shock")
                            (audio-sfx "siphon")
