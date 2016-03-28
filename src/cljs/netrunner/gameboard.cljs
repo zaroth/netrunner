@@ -119,10 +119,11 @@
 
 (defn play-sfx
   "Plays a list of sounds one after another."
-  [sfx]
+  [sfx soundbank]
   (when-not (empty? sfx)
-    (.play (.getElementById js/document (first sfx)))
-    (play-sfx (rest sfx))))
+    (when-let [sfx-key (keyword (first sfx))]
+      (.play (sfx-key soundbank)))
+    (play-sfx (rest sfx) soundbank)))
 
 (defn toast
   "Display a toast warning with the specified message.
@@ -800,50 +801,6 @@
     ;; remove restricted servers from all servers to just return allowed servers
     (remove (set restricted-servers) (set servers))))
 
-(def soundbank
-  (let [audio-sfx
-        (fn [name]
-          [:audio {:id name}
-           [:source {:src (str "/sound/" name ".ogg") :type "audio/ogg"}]
-           [:source {:src (str "/sound/" name ".mp3") :type "audio/mp3"}]])]
-    (list
-      (audio-sfx "adonis")
-      (audio-sfx "apocalypse-apex")
-      (audio-sfx "apocalypse-other")
-      (audio-sfx "assassin")
-      (audio-sfx "astro-score")
-      (audio-sfx "caprice-denied")
-      (audio-sfx "click-card")
-      (audio-sfx "click-credit")
-      (audio-sfx "click-credit-mario")
-      (audio-sfx "click-run")
-      (audio-sfx "diesel")
-      (audio-sfx "emergency-shutdown")
-      (audio-sfx "eve")
-      (audio-sfx "excalibur")
-      (audio-sfx "express-delivery")
-      (audio-sfx "flatline")
-      (audio-sfx "forged-activation-orders")
-      (audio-sfx "hedge-fund")
-      (audio-sfx "jack-out")
-      (audio-sfx "marcus-batty")
-      (audio-sfx "morning-star")
-      (audio-sfx "paper-tripping")
-      (audio-sfx "purge")
-      (audio-sfx "scorch")
-      (audio-sfx "self-modifying-code")
-      (audio-sfx "shock")
-      (audio-sfx "siphon")
-      (audio-sfx "snare")
-      (audio-sfx "stimhack")
-      (audio-sfx "trace")
-      (audio-sfx "traffic-accident")
-      (audio-sfx "viktor-1")
-      (audio-sfx "viktor-2")
-      (audio-sfx "wasted")
-      (audio-sfx "wilhelm")
-      (audio-sfx "zed")
-      )))
 
 (defn update-audio [{:keys [gameid sfx sfx-current-id] :as cursor} owner]
   ;; When it's the first game played with this state or when the sound history comes from different game, we skip the cacophony
@@ -855,12 +812,56 @@
                                   (if (> id (:id sfx-last-played))
                                     (conj sfx-list name)
                                     sfx-list)) [] sfx)]
-        (play-sfx sfx-to-play))))
+        (play-sfx sfx-to-play (om/get-state owner :soundbank)))))
   ;; Remember the most recent sfx id as last played so we don't repeat it later
   (om/set-state! owner :sfx-last-played {:gameid gameid :id sfx-current-id}))
 
 (defn gameboard [{:keys [side gameid active-player run end-turn runner-phase-12 corp-phase-12 phase-32] :as cursor} owner]
   (reify
+    om/IInitState
+    (init-state [this]
+      (let [audio-sfx (fn [name] (list (keyword name)
+                                       (new js/Howl (clj->js {:urls [(str "/sound/" name ".ogg")
+                                                                     (str "/sound/" name ".mp3")]}))))]
+        {:soundbank
+         (apply hash-map (concat
+                           (audio-sfx "adonis")
+                           (audio-sfx "apocalypse-apex")
+                           (audio-sfx "apocalypse-other")
+                           (audio-sfx "assassin")
+                           (audio-sfx "astro-score")
+                           (audio-sfx "caprice-denied")
+                           (audio-sfx "click-card")
+                           (audio-sfx "click-credit")
+                           (audio-sfx "click-credit-mario")
+                           (audio-sfx "click-run")
+                           (audio-sfx "diesel")
+                           (audio-sfx "emergency-shutdown")
+                           (audio-sfx "eve")
+                           (audio-sfx "excalibur")
+                           (audio-sfx "express-delivery")
+                           (audio-sfx "flatline")
+                           (audio-sfx "forged-activation-orders")
+                           (audio-sfx "hedge-fund")
+                           (audio-sfx "jack-out")
+                           (audio-sfx "marcus-batty")
+                           (audio-sfx "morning-star")
+                           (audio-sfx "paper-tripping")
+                           (audio-sfx "purge")
+                           (audio-sfx "scorch")
+                           (audio-sfx "self-modifying-code")
+                           (audio-sfx "shock")
+                           (audio-sfx "siphon")
+                           (audio-sfx "snare")
+                           (audio-sfx "stimhack")
+                           (audio-sfx "trace")
+                           (audio-sfx "traffic-accident")
+                           (audio-sfx "viktor-1")
+                           (audio-sfx "viktor-2")
+                           (audio-sfx "wasted")
+                           (audio-sfx "wilhelm")
+                           (audio-sfx "zed")))}))
+
     om/IWillMount
     (will-mount [this]
       (go (while true
@@ -885,7 +886,6 @@
          (let [me ((if (= side :runner) :runner :corp) cursor)
                opponent ((if (= side :runner) :corp :runner) cursor)]
            [:div.gameboard
-            soundbank
             [:div.mainpane
              (om/build zones {:player opponent :remotes (get-remotes (get-in cursor [:corp :servers]))})
              [:div.centralpane
