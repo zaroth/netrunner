@@ -37,6 +37,7 @@
     (resolve-ability state :runner (:stolen (card-def c)) c nil)
     (system-msg state :runner (str "steals " (:title c) " and gains " points
                                    " agenda point" (when (> points 1) "s")))
+    (play-sfx state side "agenda-steal")
     (swap! state update-in [:runner :register :stole-agenda] #(+ (or % 0) points))
     (gain-agenda-point state :runner points)
     (when-let [current (first (get-in @state [:corp :current]))]

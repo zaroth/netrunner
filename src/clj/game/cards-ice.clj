@@ -121,7 +121,8 @@
 (defn grail-ice
   "Creates data for grail ICE"
   [ability]
-  {:abilities [ability reveal-grail resolve-grail]})
+  {:abilities [ability reveal-grail resolve-grail]
+   :effect (effect (play-sfx "grail"))})
 
 
 ;;; For NEXT ICE

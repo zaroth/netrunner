@@ -234,7 +234,8 @@
           message (str spent card)]
       (system-msg state side message))
     (update-advancement-cost state side card)
-    (add-prop state side (get-card state card) :advance-counter 1)))
+    (add-prop state side (get-card state card) :advance-counter 1)
+    (play-sfx state side "advance")))
 
 (defn score
   "Score an agenda."
@@ -248,8 +249,9 @@
               points (get-agenda-points state :corp c)]
           (system-msg state :corp (str "scores " (:title c) " and gains " points
                                        " agenda point" (when (> points 1) "s")))
-          (when (= "01081"(:code card))
-            (play-sfx state side "astro-score"))
+          (if (= "01081"(:code card))
+            (play-sfx state side "astro-score")
+            (play-sfx state side "agenda-score"))
           (swap! state update-in [:corp :register :scored-agenda] #(+ (or % 0) points))
           (gain-agenda-point state :corp points)
           (set-prop state :corp c :advance-counter 0)

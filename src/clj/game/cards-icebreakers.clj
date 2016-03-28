@@ -241,7 +241,8 @@
    (auto-icebreaker ["All"]
                     {:abilities [{:cost [:credit 1]
                                   :msg "break ICE subroutine and access 0 cards this run"
-                                  :effect (effect (max-access 0))}
+                                  :effect (effect (max-access 0)
+                                                  (play-sfx "eater"))}
                                  (strength-pump 1 1)]})
 
    "Endless Hunger"
