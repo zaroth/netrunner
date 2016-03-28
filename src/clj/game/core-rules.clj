@@ -112,14 +112,15 @@
   (swap! state update-in [:damage :defer-damage] dissoc type)
   (trigger-event state side :pre-resolve-damage type card n)
   (let [n (if (get-defer-damage state side type args) 0 n)]
-    (let [hand (get-in @state [:runner :hand])]
-      (when (< (count hand) n)
+    (let [hand (get-in @state [:runner :hand])
+          flatlined (< (count hand) n)]
+      (when flatlined
         (flatline state))
       (when (= type :brain)
         (swap! state update-in [:runner :brain-damage] #(+ % n))
         (swap! state update-in [:runner :hand-size-modification] #(- % n)))
       (doseq [c (take n (shuffle hand))]
-        (trash state side c {:unpreventable true :cause type} type))
+        (trash state side c {:unpreventable true :cause type :suppress-effect flatlined} type))
       (trigger-event state side :damage type card))))
 
 (defn damage
@@ -207,10 +208,10 @@
   (swap! state update-in [:trash :trash-prevent type] (fnil #(+ % n) 0)))
 
 (defn resolve-trash
-  [state side {:keys [zone type] :as card} {:keys [unpreventable cause keep-server-alive] :as args} & targets]
+  [state side {:keys [zone type] :as card} {:keys [unpreventable cause keep-server-alive suppress-effect] :as args} & targets]
   (let [cdef (card-def card)
         moved-card (move state (to-keyword (:side card)) card :discard {:keep-server-alive keep-server-alive})]
-    (when-let [trash-effect (:trash-effect cdef)]
+    (when-let [trash-effect (and (not suppress-effect) (:trash-effect cdef))]
       (resolve-ability state side trash-effect moved-card (cons cause targets)))
     ;; April Fool's trash sound ;-)
     (when (and (installed? card)

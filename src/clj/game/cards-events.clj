@@ -325,7 +325,8 @@
    "Ive Had Worse"
    {:effect (effect (draw 3))
     :trash-effect {:req (req (#{:meat :net} target))
-                   :effect (effect (draw :runner 3)) :msg "draw 3 cards"}}
+                   :effect (effect (draw :runner 3)
+                                   (play-sfx "ive-had-worse")) :msg "draw 3 cards"}}
 
    "Immolation Script"
    {:effect (effect (run :archives nil card) (register-events (:events (card-def card))
