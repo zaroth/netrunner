@@ -64,6 +64,35 @@
               [:div.spectators-count.float-right (str c " Spectator" (when (> c 1) "s"))
                [:div.blue-shade.spectators (om/build-all netrunner.gamelobby/player-view (:spectators game))]]))))])))
 
+(defn- bioroid-string [id]
+  (let [letters "ABCDEFGHIJKLMNPQRSTUVWXYZ"
+        nums "0123456789"
+        both "ABCDEFGHIJKLMNPQRSTUVWXYZ0123456789"]
+    (str (.charAt nums (mod id (.-length nums)))
+         (.charAt letters (mod id (.-length letters)))
+         (clojure.string/join "" (map #(.charAt both (mod (* id %) (.-length both))) [2 3 4 5])))))
+
+(defn- runner-type-string [id]
+  (let [types ["Natural" "G-mod" "Cyborg" "Digital" "Bioroid" "Clone"]]
+    (nth types (mod id (count types)))))
+
+(defn- leet-string [name]
+  (let [m {"i" "1" "a" "4" "e" "3" "t" "7" "o" "0" }]
+    (str "l337 " (clojure.string/join
+                   "" (map #(if-let [rep (m %)] rep %) name)))))
+
+(defn get-username [user]
+  (let [name (:username user)
+        id-hex (.substring (:_id user) 0 6)
+        id (int (str "0x" id-hex))]
+    (case (mod id 8)
+      0 (str "Chairman " (clojure.string/capitalize name))
+      1 (str (clojure.string/capitalize name) " " (bioroid-string id))
+      2 (str name " " (inc (mod id 3)) ".0")
+      3 (str name ", " (runner-type-string id))
+      4 (leet-string name)
+      (leet-string "mtgred"))))
+
 (om/root navbar app-state {:target (. js/document (getElementById "left-menu"))})
 (om/root status app-state {:target (. js/document (getElementById "status"))})
 

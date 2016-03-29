@@ -5,7 +5,7 @@
             [cljs.core.async :refer [chan put! <!] :as async]
             [netrunner.auth :refer [avatar authenticated] :as auth]
             [netrunner.ajax :refer [GET]]
-            [netrunner.main :as main]))
+            [netrunner.main :refer [get-username]]))
 
 (def app-state
   (atom {:channels {:general [] :america [] :europe [] :asia-pacific [] :united-kingdom [] :français []
@@ -61,7 +61,7 @@
      (om/build avatar message {:opts {:size 38}})
      [:div.content
       [:div
-       [:span.username (:username message)]
+       [:span.username (get-username message)]
        [:span.date (-> (:date message) js/Date. js/moment (.format "dddd MMM Do - HH:mm"))]]
       [:div (:msg message)]]])))
 
