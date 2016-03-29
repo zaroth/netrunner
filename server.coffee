@@ -229,7 +229,7 @@ setInterval(sendLobby, 1000)
 # Express config
 app.configure ->
   app.use express.favicon(__dirname + "/resources/public/img/jinteki.ico")
-  app.set 'port', 1042
+  app.set 'port', 2052
   app.set 'ipaddr', "0.0.0.0"
   app.use express.methodOverride() # provide PUT DELETE
   app.use express.cookieParser()
