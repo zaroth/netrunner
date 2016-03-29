@@ -85,7 +85,7 @@
   (let [name (:username user)
         id-hex (.substring (:_id user) 0 6)
         id (int (str "0x" id-hex))]
-    (case (mod id 8)
+    (case (mod id 5)
       0 (str "Chairman " (clojure.string/capitalize name))
       1 (str (clojure.string/capitalize name) " " (bioroid-string id))
       2 (str name " " (inc (mod id 3)) ".0")
