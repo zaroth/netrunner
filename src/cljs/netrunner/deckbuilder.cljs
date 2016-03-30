@@ -386,10 +386,18 @@
                                           :dangerouslySetInnerHTML
                                           #js {:__html (restricted-dots (factionkey mwlmap))}}])))
 
+(defn- has-card? [deck title]
+  (some #(= title (-> % :card :title)) (:cards deck)))
+
+(defn- is-faction? [deck faction]
+  (= faction (:faction (:identity deck))))
+
 (defn deck-status-label
   [deck]
   (cond
-    (and (mwl-legal? deck) (valid? deck) (only-in-rotation? deck)) "legal"
+    (and (or (and (= "Runner" (:side (:identity deck))) (is-faction? deck "Anarch"))
+             (and (= "Corp" (:side (:identity deck))) (is-faction? deck "Weyland Consortium")))
+         (mwl-legal? deck) (valid? deck) (only-in-rotation? deck)) "legal"
     (valid? deck) "casual"
     :else "invalid"))
 
@@ -401,6 +409,9 @@
          valid (valid? deck)
          mwl (mwl-legal? deck)
          rotation (only-in-rotation? deck)
+         anarch (is-faction? deck "Anarch")
+         weyland (is-faction? deck "Weyland Consortium")
+         side (:side (:identity deck))
          message (case status
                    "legal" "Tournament legal"
                    "casual" "Casual play only"
@@ -408,6 +419,11 @@
      [:span.deck-status {:class status} message
       (when tooltip?
         [:div.status-tooltip.blue-shade
+         (if (= side "Runner")
+           [:div {:class (if anarch "legal" "invalid")}
+            [:span.tick (if anarch "✔" "✘")] "Is Anarch"]
+           [:div {:class (if weyland "legal" "invalid")}
+            [:span.tick (if weyland "✔" "✘")] "Is Weyland"])
          [:div {:class (if valid "legal" "invalid")}
           [:span.tick (if valid "✔" "✘")] "Basic deckbuilding rules"]
          [:div {:class (if mwl "legal" "invalid")}

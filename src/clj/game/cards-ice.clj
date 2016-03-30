@@ -121,7 +121,8 @@
 (defn grail-ice
   "Creates data for grail ICE"
   [ability]
-  {:abilities [ability reveal-grail resolve-grail]})
+  {:abilities [ability reveal-grail resolve-grail]
+   :effect (effect (play-sfx "grail"))})
 
 
 ;;; For NEXT ICE
@@ -215,7 +216,8 @@
 
    "Assassin"
    {:abilities [(trace-ability 5 (do-net-damage 3))
-                (trace-ability 4 trash-program)]}
+                (trace-ability 4 trash-program)]
+    :effect (effect (play-sfx "assassin"))}
 
    "Asteroid Belt"
    (space-ice end-the-run)
@@ -412,7 +414,8 @@
 
    "Excalibur"
    {:abilities [{:label "The Runner cannot make another run this turn"
-                 :msg "prevent the Runner from making another run" :effect (effect (prevent-run))}]}
+                 :msg "prevent the Runner from making another run" :effect (effect (prevent-run))}]
+    :effect (effect (play-sfx "excalibur"))}
 
    "Fenris"
    {:effect take-bad-pub
@@ -924,12 +927,14 @@
 
    "Viktor 1.0"
    {:abilities [(do-brain-damage 1)
-                end-the-run]}
+                end-the-run]
+    :effect (effect (play-sfx "viktor-1"))}
 
    "Viktor 2.0"
    {:abilities [(power-counter-ability (do-brain-damage 1))
                 (trace-ability 2 add-power-counter)
-                end-the-run]}
+                end-the-run]
+    :effect (effect (play-sfx "viktor-2"))}
 
    "Viper"
    {:abilities [(trace-ability 3 {:label "The Runner loses 1 [Click] if able"
@@ -1003,4 +1008,5 @@
                                                           (do (system-msg state side "uses Yagura to move the top card of R&D to the bottom")))}}}]}
 
    "Zed 1.0"
-   {:abilities [(do-brain-damage 1)]}})
+   {:abilities [(do-brain-damage 1)]
+    :effect (effect (play-sfx "zed"))}})

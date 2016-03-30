@@ -102,7 +102,8 @@
 
    "Beanstalk Royalties"
    {:msg "gain 3 [Credits]"
-    :effect (effect (gain :credit 3))}
+    :effect (effect (gain :credit 3)
+                    (play-sfx "hedge-fund"))}
 
    "Big Brother"
    {:req (req tagged)
@@ -239,7 +240,8 @@
     :effect (effect (gain :credit 3) (draw))}
 
    "Hedge Fund"
-   {:msg "gain 9 [Credits]" :effect (effect (gain :credit 9))}
+   {:msg "gain 9 [Credits]" :effect (effect (gain :credit 9)
+                                            (play-sfx "hedge-fund"))}
 
    "Hellion Alpha Test"
    {:req (req (:installed-resource runner-reg))
@@ -484,7 +486,8 @@
     :effect (effect (lose :bad-publicity 2) (trash target))}
 
    "Restructure"
-   {:effect (effect (gain :credit 15))}
+   {:effect (effect (gain :credit 15)
+                    (play-sfx "hedge-fund"))}
 
    "Reuse"
    {:choices {:max 100 :req #(and (:side % "Corp")
@@ -511,7 +514,8 @@
    "Scorched Earth"
    {:req (req tagged)
     :msg "do 4 meat damage"
-    :effect (effect (damage :meat 4 {:card card}))}
+    :effect (effect (damage :meat 4 {:card card})
+                    (play-sfx "scorch"))}
 
    "SEA Source"
    {:req (req (:successful-run runner-reg))
@@ -650,7 +654,8 @@
    "Traffic Accident"
    {:req (req (>= (:tag runner) 2))
     :msg "do 2 meat damage"
-    :effect (effect (damage :meat 2 {:card card}))}
+    :effect (effect (damage :meat 2 {:card card})
+                    (play-sfx "traffic-accident"))}
 
    "Trick of Light"
    {:choices {:req #(and (contains? % :advance-counter) (> (:advance-counter %) 0))}

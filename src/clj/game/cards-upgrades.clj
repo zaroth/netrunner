@@ -61,13 +61,16 @@
    {:events {:pass-ice {:req (req (and this-server
                                        (= (:position run) 1))) ; trigger when last ice passed
                         :msg "start a Psi game"                        
-                        :psi {:not-equal {:msg "end the run" :effect (effect (end-run))}}}
+                        :psi {:not-equal {:msg "end the run" :effect (effect (end-run)
+                                                                             (play-sfx "caprice-denied"))}}}
              :run {:req (req (and this-server
                                   (= (:position run) 0))) ; trigger on unprotected server
                    :msg "start a Psi game"
-                   :psi {:not-equal {:msg "end the run" :effect (effect (end-run))}}}}
+                   :psi {:not-equal {:msg "end the run" :effect (effect (end-run)
+                                                                        (play-sfx "caprice-denied"))}}}}
     :abilities [{:msg "start a Psi game"
-                 :psi {:not-equal {:msg "end the run" :effect (effect (end-run))}}}]}
+                 :psi {:not-equal {:msg "end the run" :effect (effect (end-run)
+                                                                      (play-sfx "caprice-denied"))}}}]}
 
    "ChiLo City Grid"
    {:events {:successful-trace {:req (req this-server)
@@ -183,7 +186,8 @@
                                    :choices {:req #(and (ice? %)
                                                         (rezzed? %))}
                                    :msg (msg "resolve a subroutine on " (:title target))}}
-                 :effect (effect (trash card))}]}
+                 :effect (effect (trash card))}]
+    :effect (effect (play-sfx "marcus-batty"))}
 
    "Midori"
    {:abilities
@@ -322,7 +326,8 @@
                                 (resolve-ability
                                   state side
                                   {:trace {:base (req (dec (count cards)))
-                                           :effect (effect (damage :net 3 {:card card}))
+                                           :effect (effect (play-sfx "self-destruct")
+                                                           (damage :net 3 {:card card}))
                                            :msg "do 3 net damage"}} card nil)))}]}
 
    "Shell Corporation"

@@ -21,7 +21,7 @@
   "Checks the string property of the card to see if it contains the given value"
   [card property value]
   (when-let [p (property card)]
-    (> (.indexOf p value) -1)))
+    (> (.indexOf (.toLowerCase p) (.toLowerCase value)) -1)))
 
 (defn card-is?
   "Checks the property of the card to see if it is equal to the given value,

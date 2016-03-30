@@ -357,6 +357,7 @@
                                  " (" base
                                  (when (pos? bonus) (str " + " bonus " bonus"))
                                  " + " boost " [Credits]) (" (make-label ability) ")"))
+    (play-sfx state side "trace")
     (swap! state update-in [:bonus] dissoc :trace)
     (show-prompt state :runner card (str "Boost link strength?") :credit #(resolve-trace state side %) {:priority 2})
     (swap! state assoc :trace {:strength total :ability ability :card card})

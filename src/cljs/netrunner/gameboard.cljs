@@ -4,7 +4,7 @@
             [sablono.core :as sab :include-macros true]
             [cljs.core.async :refer [chan put! <!] :as async]
             [clojure.string :refer [capitalize lower-case]]
-            [netrunner.main :refer [app-state]]
+            [netrunner.main :refer [app-state get-username]]
             [netrunner.auth :refer [avatar] :as auth]
             [netrunner.cardbrowser :refer [image-url add-symbols] :as cb]
             [differ.core :as differ]
@@ -116,6 +116,14 @@
       (.scrollTop $div (+ (.prop $div "scrollHeight") 500))
       (aset input "value" "")
       (.focus input))))
+
+(defn play-sfx
+  "Plays a list of sounds one after another."
+  [sfx soundbank]
+  (when-not (empty? sfx)
+    (when-let [sfx-key (keyword (first sfx))]
+      (.play (sfx-key soundbank)))
+    (play-sfx (rest sfx) soundbank)))
 
 (defn toast
   "Display a toast warning with the specified message.
@@ -274,7 +282,7 @@
              [:div.message
               (om/build avatar (:user msg) {:opts {:size 38}})
               [:div.content
-               [:div.username (get-in msg [:user :username])]
+               [:div.username (get-username (:user msg))]
                [:div (for [item (get-message-parts (:text msg))] (create-span item))]]]))]
         [:form {:on-submit #(send-msg % owner)}
          [:input {:ref "msg-input" :placeholder "Say something" :accessKey "l"}]]]))))
@@ -680,7 +688,7 @@
    (sab/html
     (let [me? (= (:side @game-state) :runner)]
       [:div.stats.panel.blue-shade {}
-       [:h4.ellipsis (om/build avatar user {:opts {:size 22}}) (:username user)]
+       [:h4.ellipsis (om/build avatar user {:opts {:size 22}}) (get-username user)]
        [:div (str click " Click" (if (not= click 1) "s" "")) (when me? (controls :click))]
        [:div (str credit " Credit" (if (not= credit 1) "s" "")
                   (when (pos? run-credit)
@@ -702,7 +710,7 @@
    (sab/html
     (let [me? (= (:side @game-state) :corp)]
       [:div.stats.panel.blue-shade {}
-       [:h4.ellipsis (om/build avatar user {:opts {:size 22}}) (:username user)]
+       [:h4.ellipsis (om/build avatar user {:opts {:size 22}}) (get-username user)]
        [:div (str click " Click" (if (not= click 1) "s" "")) (when me? (controls :click))]
        [:div (str credit " Credit" (if (not= credit 1) "s" "")) (when me? (controls :credit))]
        [:div (str agenda-point " Agenda Point" (when (not= agenda-point 1) "s"))
@@ -793,8 +801,74 @@
     ;; remove restricted servers from all servers to just return allowed servers
     (remove (set restricted-servers) (set servers))))
 
+
+(defn update-audio [{:keys [gameid sfx sfx-current-id] :as cursor} owner]
+  ;; When it's the first game played with this state or when the sound history comes from different game, we skip the cacophony
+  (let [sfx-last-played (om/get-state owner :sfx-last-played)]
+    (when (and (not (nil? sfx-last-played))
+               (= gameid (:gameid sfx-last-played)))
+      ;; Skip the SFX from queue with id smaller than the one last played, queue the rest
+      (let [sfx-to-play (reduce (fn [sfx-list {:keys [id name]}]
+                                  (if (> id (:id sfx-last-played))
+                                    (conj sfx-list name)
+                                    sfx-list)) [] sfx)]
+        (play-sfx sfx-to-play (om/get-state owner :soundbank)))))
+  ;; Remember the most recent sfx id as last played so we don't repeat it later
+  (om/set-state! owner :sfx-last-played {:gameid gameid :id sfx-current-id}))
+
 (defn gameboard [{:keys [side gameid active-player run end-turn runner-phase-12 corp-phase-12] :as cursor} owner]
   (reify
+    om/IInitState
+    (init-state [this]
+      (let [audio-sfx (fn [name] (list (keyword name)
+                                       (new js/Howl (clj->js {:urls [(str "/sound/" name ".ogg")
+                                                                     (str "/sound/" name ".mp3")]}))))]
+        {:soundbank
+         (apply hash-map (concat
+                           (audio-sfx "adonis")
+                           (audio-sfx "advance")
+                           (audio-sfx "agenda-score")
+                           (audio-sfx "agenda-steal")
+                           (audio-sfx "apocalypse-apex")
+                           (audio-sfx "apocalypse-other")
+                           (audio-sfx "assassin")
+                           (audio-sfx "astro-score")
+                           (audio-sfx "caprice-denied")
+                           (audio-sfx "click-card")
+                           (audio-sfx "click-credit")
+                           (audio-sfx "click-credit-mario")
+                           (audio-sfx "click-run")
+                           (audio-sfx "diesel")
+                           (audio-sfx "eater")
+                           (audio-sfx "emergency-shutdown")
+                           (audio-sfx "eve")
+                           (audio-sfx "excalibur")
+                           (audio-sfx "express-delivery")
+                           (audio-sfx "flatline")
+                           (audio-sfx "forged-activation-orders")
+                           (audio-sfx "grail")
+                           (audio-sfx "hedge-fund")
+                           (audio-sfx "ive-had-worse")
+                           (audio-sfx "jack-out")
+                           (audio-sfx "marcus-batty")
+                           (audio-sfx "morning-star")
+                           (audio-sfx "paper-tripping")
+                           (audio-sfx "purge")
+                           (audio-sfx "scorch")
+                           (audio-sfx "self-destruct")
+                           (audio-sfx "self-modifying-code")
+                           (audio-sfx "shock")
+                           (audio-sfx "siphon")
+                           (audio-sfx "snare")
+                           (audio-sfx "stimhack")
+                           (audio-sfx "trace")
+                           (audio-sfx "traffic-accident")
+                           (audio-sfx "viktor-1")
+                           (audio-sfx "viktor-2")
+                           (audio-sfx "wasted")
+                           (audio-sfx "wilhelm")
+                           (audio-sfx "zed")))}))
+
     om/IWillMount
     (will-mount [this]
       (go (while true
@@ -809,7 +883,8 @@
         (set! (.-cursor (.-style (.-body js/document))) "url('/img/gold_crosshair.png') 12 12, crosshair")
         (set! (.-cursor (.-style (.-body js/document))) "default"))
       (doseq [{:keys [msg type options]} (get-in cursor [side :toast])]
-        (toast msg type options)))
+        (toast msg type options))
+      (update-audio cursor owner))
 
     om/IRenderState
     (render-state [this state]

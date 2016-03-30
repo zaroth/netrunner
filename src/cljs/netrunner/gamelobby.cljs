@@ -4,7 +4,7 @@
             [sablono.core :as sab :include-macros true]
             [cljs.core.async :refer [chan put! <!] :as async]
             [clojure.string :refer [join]]
-            [netrunner.main :refer [app-state]]
+            [netrunner.main :refer [app-state get-username]]
             [netrunner.auth :refer [authenticated avatar] :as auth]
             [netrunner.gameboard :refer [init-game game-state]]
             [netrunner.cardbrowser :refer [image-url] :as cb]
@@ -165,7 +165,7 @@
    (sab/html
     [:span.player
      (om/build avatar (:user cursor) {:opts {:size 22}})
-     (get-in cursor [:user :username])
+     (get-username (:user cursor))
      (let [side (:side cursor)
            faction (:faction cursor)
            identity (:identity cursor)]
@@ -194,7 +194,7 @@
              [:div.message
               (om/build avatar (:user msg) {:opts {:size 38}})
               [:div.content
-               [:div.username (get-in msg [:user :username])]
+               [:div.username (get-username (:user msg))]
                [:div (:text msg)]]]))]
         [:div
          [:form.msg-box {:on-submit #(send-msg % owner)}

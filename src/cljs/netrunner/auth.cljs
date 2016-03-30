@@ -6,12 +6,17 @@
             [netrunner.main :refer [app-state]]
             [netrunner.ajax :refer [POST GET]]))
 
+(defn- april-fools-avatar [emailhash]
+  (let [id-hex (.substring emailhash 0 6)
+        id (int (str "0x" id-hex))]
+    (str "/img/aprilfools/weyland/" (mod id 10) ".png")))
+
 (defn avatar [{:keys [emailhash]} owner opts]
   (om/component
    (sab/html
     (when emailhash
       [:img.avatar
-       {:src (str "http://www.gravatar.com/avatar/" emailhash "?d=retro&s=" (:size opts))}]))))
+       {:src (april-fools-avatar emailhash)}]))))
 
 (defn authenticated [f]
   (if-let [user (:user @app-state)]

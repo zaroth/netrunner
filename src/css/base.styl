@@ -1716,6 +1716,49 @@ nav ul
     padding-left: 20px
     list-style-type: none
 
+ #admin
+   position: absolute
+   top: 0
+   left: 0
+   right: 0
+   bottom: 0
+   overflow: auto
+
+ #admin nav li
+   padding-left: 3px
+   font-weight: bold
+
+ #admin nav li li
+   padding-left: 8px
+   font-weight: normal
+
+ .admin
+   padding: 10px 20px
+   width: 650px
+   margin: 40px auto 10px
+
+   > h3
+     margin-top: -35px
+     padding-top: 35px
+     -webkit-background-clip: content-box
+     background-clip: content-box
+
+   > h3:target
+     animation: highlight 1.5s ease
+
+   > h4
+     margin-top: -35px
+     padding-top: 35px
+     -webkit-background-clip: content-box
+     background-clip: content-box
+
+   > h4:target
+     animation: highlight 1.5s ease
+
+   li
+     padding-left: 20px
+
+
 @keyframes highlight
   from
     background: darkolivegreen

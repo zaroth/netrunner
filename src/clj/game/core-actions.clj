@@ -5,7 +5,7 @@
 (declare card-str can-rez? corp-install enforce-msg gain-agenda-point get-remote-names
          jack-out move name-zone play-instant purge resolve-select run has-subtype?
          runner-install trash update-breaker-strength update-ice-in-server update-run-ice win
-         can-run-server? can-score?)
+         can-run-server? can-score? play-sfx)
 
 ;;; Neutral actions
 (defn play
@@ -31,7 +31,8 @@
   (when (and (not (get-in @state [side :register :cannot-draw])) (pay state side nil :click 1))
     (system-msg state side "spends [Click] to draw a card")
     (draw state side)
-    (trigger-event state side (if (= side :corp) :corp-click-draw :runner-click-draw))))
+    (trigger-event state side (if (= side :corp) :corp-click-draw :runner-click-draw))
+    (play-sfx state side "click-card")))
 
 (defn click-credit
   "Click to gain 1 credit."
@@ -39,7 +40,8 @@
   (when (pay state side nil :click 1)
     (system-msg state side "spends [Click] to gain 1 [Credits]")
     (gain state side :credit 1)
-    (trigger-event state side (if (= side :corp) :corp-click-credit :runner-click-credit))))
+    (trigger-event state side (if (= side :corp) :corp-click-credit :runner-click-credit))
+    (play-sfx state side "click-credit-mario")))
 
 (defn change
   "Increase/decrease a player's property (clicks, credits, MU, etc.) by delta."
@@ -232,7 +234,8 @@
           message (str spent card)]
       (system-msg state side message))
     (update-advancement-cost state side card)
-    (add-prop state side (get-card state card) :advance-counter 1)))
+    (add-prop state side (get-card state card) :advance-counter 1)
+    (play-sfx state side "advance")))
 
 (defn score
   "Score an agenda."
@@ -246,6 +249,9 @@
               points (get-agenda-points state :corp c)]
           (system-msg state :corp (str "scores " (:title c) " and gains " points
                                        " agenda point" (when (> points 1) "s")))
+          (if (= "01081"(:code card))
+            (play-sfx state side "astro-score")
+            (play-sfx state side "agenda-score"))
           (swap! state update-in [:corp :register :scored-agenda] #(+ (or % 0) points))
           (gain-agenda-point state :corp points)
           (set-prop state :corp c :advance-counter 0)
@@ -277,7 +283,8 @@
     (let [cost (pay state :runner nil :click 1)
           spent (build-spend-msg cost "make a run on")
           message (str spent server)]
-      (system-msg state :runner message))))
+      (system-msg state :runner message))
+    (play-sfx state side "click-run")))
 
 (defn remove-tag
   "Click to remove a tag."

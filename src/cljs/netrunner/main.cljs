@@ -12,7 +12,7 @@
          :decks [] :decks-loaded false
          :games [] :gameid nil :messages []}))
 
-(def tokens #js ["/" "/cards" "/deckbuilder" "/play" "/help" "/about"])
+(def tokens #js ["/" "/cards" "/deckbuilder" "/play" "/help" "/about" "/admin"])
 
 (def history (Html5History.))
 
@@ -32,12 +32,13 @@
   (om/component
    (sab/html
     [:ul.carousel-indicator {}
-     (for [page [["Jinteki" "/" 0]
+     (for [page [["Weyland" "/" 0]
                  ["Cards" "/cards" 1]
                  ["Deck Builder" "/deckbuilder" 2]
                  ["Play" "/play" 3]
                  ["Help" "/help" 4]
-                 ["About" "/about" 5]]]
+                 ["About" "/about" 5]
+                 ["Admin" "/admin" 6]]]
        (let [route (second page)]
          [:li {:class (if (= (first (:active-page cursor)) route) "active" "")
                :on-click #(.setToken history route)
@@ -78,20 +79,21 @@
 
 (defn- leet-string [name]
   (let [m {"i" "1" "a" "4" "e" "3" "t" "7" "o" "0" }]
-    (str "l337 " (clojure.string/join
-                   "" (map #(if-let [rep (m %)] rep %) name)))))
+    (clojure.string/join
+                   "" (map #(if-let [rep (m %)] rep %) name))))
 
 (defn get-username [user]
-  (let [name (:username user)
-        id-hex (.substring (:_id user) 0 6)
-        id (int (str "0x" id-hex))]
-    (case (mod id 5)
-      0 (str "Chairman " (clojure.string/capitalize name))
-      1 (str (clojure.string/capitalize name) " " (bioroid-string id))
-      2 (str name " " (inc (mod id 3)) ".0")
-      3 (str name ", " (runner-type-string id))
-      4 (leet-string name)
-      (leet-string "mtgred"))))
+  (if-let [name (:username user)]
+    (let [id-hex (.substring (:emailhash user) 0 6)
+          id (int (str "0x" id-hex))]
+      (case (mod id 6)
+        0 (str "Chairman " (clojure.string/capitalize name))
+        1 (str (clojure.string/capitalize name) " " (bioroid-string id))
+        2 (str name " " (inc (mod id 3)) ".0")
+        3 (str name ", " (runner-type-string id))
+        4 (leet-string name)
+        (str name ", NRDB Deck of the Week winner")))
+    ""))
 
 (om/root navbar app-state {:target (. js/document (getElementById "left-menu"))})
 (om/root status app-state {:target (. js/document (getElementById "status"))})

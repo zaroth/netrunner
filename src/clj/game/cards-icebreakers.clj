@@ -241,7 +241,8 @@
    (auto-icebreaker ["All"]
                     {:abilities [{:cost [:credit 1]
                                   :msg "break ICE subroutine and access 0 cards this run"
-                                  :effect (effect (max-access 0))}
+                                  :effect (effect (max-access 0)
+                                                  (play-sfx "eater"))}
                                  (strength-pump 1 1)]})
 
    "Endless Hunger"
@@ -334,7 +335,12 @@
                                  (strength-pump 3 5)]})
 
    "Morning Star"
-   {:abilities [(break-sub 1 0 "barrier")]}
+   {:abilities [{:msg (str "break " (when (> 0 1) "up to ")
+                           (if (pos? 0) 0 "any number of")
+                           (when "barrier" (str " " "barrier"))
+                           " subroutine" (when-not (= num 1) "s"))
+                 :effect (effect (play-sfx "morning-star"))
+                 :cost [:credit 1]}]}
 
    "Mimic"
    {:abilities [(break-sub 1 1 "sentry")]}

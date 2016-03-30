@@ -16,6 +16,7 @@ html
     script(src='/lib/moment/min/moment.min.js')
     script(src='/lib/marked/marked.min.js')
     script(src='/lib/toastr/toastr.min.js')
+    script(src='/lib/howler/howler.min.js')
     script(src='/socket.io/socket.io.js')
     script(type="text/javascript")!= "var user = " + JSON.stringify(user) + ";"
 
@@ -49,6 +50,7 @@ html
         goog.require("netrunner.help");
         goog.require("netrunner.about");
         goog.require("netrunner.news");
+        goog.require("netrunner.admin");
         goog.require("dev.figwheel");
     else
       script(src='/lib/react/react.min.js')

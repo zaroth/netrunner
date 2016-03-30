@@ -2,7 +2,7 @@
 
 (declare card-init card-str deactivate enforce-msg gain-agenda-point get-agenda-points
          handle-end-run is-type? resolve-steal-events show-prompt untrashable-while-rezzed?
-         in-corp-scored? update-all-ice win win-decked prevent-draw)
+         in-corp-scored? update-all-ice win win-decked prevent-draw installed? play-sfx rezzed? has-subtype?)
 
 ;;;; Functions for applying core Netrunner game rules.
 
@@ -78,7 +78,8 @@
 (defn flatline [state]
   (when-not (:winner state)
     (system-msg state :runner "is flatlined")
-    (win state :corp "Flatline")))
+    (win state :corp "Flatline")
+    (play-sfx state :runner "wasted")))
 
 (defn damage-count
   "Calculates the amount of damage to do, taking into account prevention and boosting effects."
@@ -113,14 +114,15 @@
   (swap! state update-in [:damage :defer-damage] dissoc type)
   (trigger-event state side :pre-resolve-damage type card n)
   (let [n (if (get-defer-damage state side type args) 0 n)]
-    (let [hand (get-in @state [:runner :hand])]
-      (when (< (count hand) n)
+    (let [hand (get-in @state [:runner :hand])
+          flatlined (< (count hand) n)]
+      (when flatlined
         (flatline state))
       (when (= type :brain)
         (swap! state update-in [:runner :brain-damage] #(+ % n))
         (swap! state update-in [:runner :hand-size-modification] #(- % n)))
       (doseq [c (take n (shuffle hand))]
-        (trash state side c {:unpreventable true :cause type} type))
+        (trash state side c {:unpreventable true :cause type :suppress-effect flatlined} type))
       (trigger-event state side :damage type card))))
 
 (defn damage
@@ -208,11 +210,23 @@
   (swap! state update-in [:trash :trash-prevent type] (fnil #(+ % n) 0)))
 
 (defn resolve-trash
-  [state side {:keys [zone type] :as card} {:keys [unpreventable cause keep-server-alive] :as args} & targets]
+  [state side {:keys [zone type] :as card} {:keys [unpreventable cause keep-server-alive suppress-effect] :as args} & targets]
   (let [cdef (card-def card)
         moved-card (move state (to-keyword (:side card)) card :discard {:keep-server-alive keep-server-alive})]
-    (when-let [trash-effect (:trash-effect cdef)]
+    (when-let [trash-effect (and (not suppress-effect) (:trash-effect cdef))]
       (resolve-ability state side trash-effect moved-card (cons cause targets)))
+    ;; April Fool's trash sound ;-)
+    (when (and (installed? card)
+               (or (and (card-is? card :side :runner)
+                        (not (:facedown card)))
+                   (and (card-is? card :side :corp)
+                        (rezzed? card)))
+               (or (has-subtype? card "Executive")
+                   (has-subtype? card "Bioroid")
+                   (has-subtype? card "Clone")
+                   (has-subtype? card "Sysop")
+                   (has-subtype? card "Connection")))
+      (play-sfx state side "wilhelm"))
     (swap! state update-in [:per-turn] dissoc (:cid moved-card))))
 
 (defn trash
@@ -336,7 +350,8 @@
                 (= (:counter-type card) "Virus"))
         (set-prop state :runner card :counter 0)))
     (update-all-ice state side))
-  (trigger-event state side :purge))
+  (trigger-event state side :purge)
+  (play-sfx state side "purge"))
 
 (defn mill
   "Force the discard of n cards from :deck to :discard."
@@ -370,4 +385,4 @@
 (defn init-trace-bonus
   "Applies a bonus base strength of n to the next trace attempt."
   [state side n]
-  (swap! state update-in [:bonus :trace] (fnil #(+ % n) 0)))
+  (swap! state update-in [:bonus :tracetrace] (fnil #(+ % n) 0)))

@@ -9,7 +9,8 @@
                                          " [Credits] and take 2 tags")
                                :effect (effect (tag-runner 2)
                                                (gain :runner :credit (* 2 (min 5 (:credit corp))))
-                                               (lose :corp :credit (min 5 (:credit corp))))}} card))}
+                                               (lose :corp :credit (min 5 (:credit corp)))
+                                               (play-sfx "siphon"))}} card))}
 
    "Amped Up"
    {:msg "gain [Click][Click][Click] and suffer 1 brain damage"
@@ -39,7 +40,10 @@
                    (when (not (or (= ["onhost"] (get c :zone)) (= '(:onhost) (get c :zone))))
                      (move state side c [:rig :facedown])
                      (if (:memoryunits c)
-                       (gain state :runner :memory (:memoryunits c))))))}
+                       (gain state :runner :memory (:memoryunits c)))))
+                 (if (= "09029" (get-in @state [:runner :identity :code])) ; Apex: Invasive Predator
+                   (play-sfx state side "apocalypse-apex")
+                   (play-sfx state side "apocalypse-other")))}
 
    "Blackmail"
    {:req (req has-bad-pub) :prompt "Choose a server" :choices (req runnable-servers)
@@ -148,7 +152,8 @@
     :events {:run-ends nil}}
 
    "Diesel"
-   {:msg "draw 3 cards" :effect (effect (draw 3))}
+   {:msg "draw 3 cards" :effect (effect (draw 3)
+                                        (play-sfx "diesel"))}
 
    "Dirty Laundry"
    {:prompt "Choose a server" :choices (req runnable-servers)
@@ -171,14 +176,16 @@
     :effect (effect (gain :click 1) (run target nil card))}
 
    "Easy Mark"
-   {:msg "gain 3 [Credits]" :effect (effect (gain :credit 3))}
+   {:msg "gain 3 [Credits]" :effect (effect (gain :credit 3)
+                                            (play-sfx "hedge-fund"))}
 
    "Emergency Shutdown"
    {:req (req (some #{:hq} (:successful-run runner-reg)))
     :msg (msg "derez " (:title target))
     :choices {:req #(and (ice? %)
                          (rezzed? %))}
-    :effect (effect (derez target))}
+    :effect (effect (derez target)
+                    (play-sfx "emergency-shutdown"))}
 
    "Employee Strike"
    {:msg "disable the Corp's identity"
@@ -233,7 +240,8 @@
    "Express Delivery"
    {:prompt "Choose a card to add to your Grip" :choices (req (take 4 (:deck runner)))
     :msg "look at the top 4 cards of their Stack and add 1 of them to their Grip"
-    :effect (effect (move target :hand) (shuffle! :deck))}
+    :effect (effect (move target :hand) (shuffle! :deck)
+                    (play-sfx "express-delivery"))}
 
    "Feint"
    {:effect (effect (run :hq nil card) (register-events (:events (card-def card))
@@ -256,7 +264,8 @@
                      state :corp
                      {:prompt (msg "Rez " (:title ice) " at position " icepos
                                    " of " serv " or trash it?") :choices ["Rez" "Trash"]
-                      :effect (effect (resolve-ability
+                      :effect (effect (play-sfx "forged-activation-orders")
+                                      (resolve-ability
                                         (if (and (= target "Rez") (<= (rez-cost state :corp ice) (:credit corp)))
                                           {:msg (msg "force the rez of " (:title ice))
                                            :effect (effect (rez :corp ice))}
@@ -324,7 +333,8 @@
    "Ive Had Worse"
    {:effect (effect (draw 3))
     :trash-effect {:req (req (#{:meat :net} target))
-                   :effect (effect (draw :runner 3)) :msg "draw 3 cards"}}
+                   :effect (effect (draw :runner 3)
+                                   (play-sfx "ive-had-worse")) :msg "draw 3 cards"}}
 
    "Immolation Script"
    {:effect (effect (run :archives nil card) (register-events (:events (card-def card))
@@ -488,7 +498,8 @@
     :msg "add it to their score area and gain 1 agenda point"}
 
    "Paper Tripping"
-   {:msg "remove all tags" :effect (effect (lose :tag :all))}
+   {:msg "remove all tags" :effect (effect (lose :tag :all)
+                                           (play-sfx "paper-tripping"))}
 
    "Planned Assault"
    {:msg (msg "play " (:title target))
@@ -667,13 +678,15 @@
    "Stimhack"
    {:prompt "Choose a server" :choices (req runnable-servers)
     :effect (effect (gain-run-credits 9)
+                    (play-sfx "stimhack")
                     (run target {:end-run
                                  {:msg " take 1 brain damage"
                                   :effect (effect (damage :brain 1 {:unpreventable true :card card}))}}
                       card))}
 
    "Sure Gamble"
-   {:msg "gain 9 [Credits]" :effect (effect (gain :credit 9))}
+   {:msg "gain 9 [Credits]" :effect (effect (gain :credit 9)
+                                            (play-sfx "hedge-fund"))}
 
    "Surge"
    {:msg (msg "place 2 virus tokens on " (:title target))
