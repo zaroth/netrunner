@@ -31,7 +31,8 @@
    :corp-winrates (corp-winrates)
    :rng (rng-settings)
    :connect (connect-settings)
-   :editor (first (shuffle editors))})
+   :editor (first (shuffle editors))
+   :spamming ""})
 
 (def app-state (atom (new-state)))
 
@@ -80,7 +81,7 @@
                            :checked (= (om/get-state owner [:rng :capap]) option)}]
            option]))]
        [:p [:input {:disabled true :type "checkbox" :checked (om/get-state owner [:rng :snipe])}
-            "Snipe only agenda during single HQ access"]]
+            "Snipe only agenda during HQ single access"]]
        [:p [:input {:disabled true :type "checkbox" :checked (om/get-state owner [:rng :siphon])}
             "Force Account Siphon in opening hand"]]
 
@@ -90,9 +91,10 @@
        [:p [:input {:disabled true :type "checkbox" :checked (om/get-state owner [:connect :blame])}
             "Blame my terrible Internet connection on Weyland.meat"]]
 
+
        [:h2 "Latest decklists"]
        [:h4 "Dan D'Argenio"]
-       [:ol
+       [:ul
         [:li "For mtgred's eyes only."]]
 
        [:h4 "Chill84"]
@@ -102,6 +104,51 @@
         [:li "1x Yog.0"]
         [:li "1x Levy AR Lab Access"]
         [:li "43x Orange cards selected by your cat"]]
+
+       [:h4 "Calimsha"]
+       [:ul
+        [:li "3x Diesel"]
+        [:li "3x Dirty Laundry"]
+        [:li "1x Indexing"]
+        [:li "1x Legwork ••"]
+        [:li "1x Levy AR Lab Access"]
+        [:li "3x Lucky Find ••••• •"]
+        [:li "2x Quality Time"]
+        [:li "1x Scavenge"]
+        [:li "1x Stimhack •"]
+        [:li "3x Sure Gamble"]
+        [:li "3x The Maker's Eye"]
+        [:li "2x Astrolabe"]
+        [:li "3x Clone Chip ☆☆☆"]
+        [:li "1x Plascrete Carapace"]
+        [:li "3x Prepaid VoicePAD ☆☆☆"]
+        [:li "1x Same Old Thing"]
+        [:li "1x Symmetrical Visage"]
+        [:li "1x Atman"]
+        [:li "2x Cerberus \"Lady\" H1 ☆☆"]
+        [:li "1x Cyber-Cypher"]
+        [:li "1x Mimic •"]
+        [:li "1x Sharpshooter"]
+        [:li "1x ZU.13 Key Master"]
+        [:li "1x Clot ••"]
+        [:li "1x Datasucker •"]
+        [:li "1x Parasite ☆ ••"]
+        [:li "3x Self-modifying Code"]
+        [:li "What do you mean, this isn't legal anymore?"]]
+
+       [:h2 "NRDB DotW spambot"]
+       [:p "Enter decklist link: " [:input {:type "text" :style {:width "500px"}
+                                            :value (om/get-state owner :decklist-link)
+                                            :on-change #(om/set-state! owner :decklist-link (.. % -target -value))}]]
+       [:p [:button {:type "button" :on-click #(when (clojure.string/starts-with? (om/get-state owner :decklist-link) "http://")
+                                                (om/set-state! owner :spamming "Spamming likes...")
+                                                (js/setTimeout
+                                                  (fn []
+                                                    (om/set-state! owner :spamming
+                                                                   "Spamming likes.... Done. Congratulations, next week's Deeklist of the Week winner!"))
+                                                  4000))}
+            "Spam Likes"]
+        [:label {:style {:padding-left "10px"}} (om/get-state owner :spamming)]]
 
 
        [:h2 "Run Last Click safety word"]
