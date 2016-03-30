@@ -385,4 +385,4 @@
 (defn init-trace-bonus
   "Applies a bonus base strength of n to the next trace attempt."
   [state side n]
-  (swap! state update-in [:bonus :tracetrace] (fnil #(+ % n) 0)))
+  (swap! state update-in [:bonus :trace] (fnil #(+ % n) 0)))
