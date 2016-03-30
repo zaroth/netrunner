@@ -67,7 +67,8 @@
    {:msg (msg "gain " (count (filter #(has-subtype? % "Connection") (all-installed state :runner)))
               " [Credits]")
     :effect (effect (gain :credit (count (filter #(has-subtype? % "Connection")
-                                                 (all-installed state :runner)))))}
+                                                 (all-installed state :runner))))
+                    (play-sfx "hedge-fund"))}
 
    "Career Fair"
    {:prompt "Choose a resource to install from your Grip"
@@ -123,7 +124,8 @@
 
    "Day Job"
    {:additional-cost [:click 3]
-    :msg "gain 10 [Credits]" :effect (effect (gain :credit 10))}
+    :msg "gain 10 [Credits]" :effect (effect (gain :credit 10)
+                                             (play-sfx "hedge-fund"))}
 
    "Déjà Vu"
    {:prompt "Choose a card to add to Grip" :choices (req (cancellable (:discard runner) :sorted))
@@ -293,7 +295,8 @@
                          (in-hand? %))}
     :msg (msg "trash " (join ", " (map :title targets)) " and gain "
               (* 2 (count targets)) " [Credits]")
-    :effect (effect (trash-cards targets) (gain :credit (* 2 (count targets))))}
+    :effect (effect (trash-cards targets) (gain :credit (* 2 (count targets)))
+                    (play-sfx "hedge-fund"))}
 
    "Game Day"
    {:msg (msg "draw " (- (hand-size state :runner) (count (:hand runner))) " cards")
@@ -376,7 +379,9 @@
                                        {:choices {:req installed?}
                                         :effect (effect (expose target))
                                         :msg (msg "expose " (:title target))}
-                                       {:msg "gain 2 [Credits]" :effect (effect (gain :credit 2))})
+                                       {:msg "gain 2 [Credits]" :effect (effect (gain :credit 2)
+                                                                                (play-sfx "hedge-fund"))
+                                        })
                                      card nil))}
 
    "Inject"
@@ -456,7 +461,8 @@
 
    "Lucky Find"
    {:msg "gain 9 [Credits]"
-    :effect (effect (gain :credit 9))}
+    :effect (effect (gain :credit 9)
+                    (play-sfx "hedge-fund"))}
 
    "Making an Entrance"
    {:msg "look at and trash or rearrange the top 6 cards of their Stack"
@@ -518,7 +524,8 @@
 
    "Power Nap"
    {:effect (effect (gain :credit (+ 2 (count (filter #(has-subtype? % "Double")
-                                                      (:discard runner))))))
+                                                      (:discard runner)))))
+                    (play-sfx "hedge-fund"))
     :msg (msg "gain " (+ 2 (count (filter #(has-subtype? % "Double") (:discard runner)))) " [Credits]")}
 
    "Power to the People"
@@ -558,7 +565,8 @@
                                            (= (last (:zone %)) :content)
                                            (not (:rezzed %)))}
                       :msg (msg "add " c " advancement tokens on a card and gain " (* 2 c) " [Credits]")
-                      :effect (effect (gain :credit (* 2 c)) (add-prop :corp target :advance-counter c {:placed true}))}
+                      :effect (effect (gain :credit (* 2 c)) (add-prop :corp target :advance-counter c {:placed true})
+                                      (play-sfx "hedge-fund"))}
                      card nil)))}
 
    "Quest Completed"
@@ -717,7 +725,8 @@
              :run-ends {:effect (effect (unregister-events card))}}}
 
    "Three Steps Ahead"
-   {:end-turn {:effect (effect (gain :credit (* 2 (count (:successful-run runner-reg)))))
+   {:end-turn {:effect (effect (gain :credit (* 2 (count (:successful-run runner-reg))))
+                               (play-sfx "hedge-fund"))
                :msg (msg "gain " (* 2 (count (:successful-run runner-reg))) " [Credits]")}}
 
    "Tinkering"
