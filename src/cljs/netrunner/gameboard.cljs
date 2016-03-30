@@ -848,6 +848,7 @@
                            (audio-sfx "forged-activation-orders")
                            (audio-sfx "grail")
                            (audio-sfx "hedge-fund")
+                           (audio-sfx "hypnotoad")
                            (audio-sfx "ive-had-worse")
                            (audio-sfx "jack-out")
                            (audio-sfx "marcus-batty")

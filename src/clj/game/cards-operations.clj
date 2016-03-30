@@ -87,7 +87,7 @@
 
    "Back Channels"
    {:prompt "Choose an installed card in a server to trash" :choices {:req #(= (last (:zone %)) :content)}
-    :effect (effect (gain :credit (* 3 (:advance-counter target))) (trash target))
+    :effect (effect (gain :credit (* 3 (:advance-counter target))) (trash target) (play-sfx "hedge-fund"))
     :msg (msg "trash " (card-str state target) " and gain "
               (* 3 (:advance-counter target)) " [Credits]")}
 
@@ -124,7 +124,7 @@
 
    "Blue Level Clearance"
    {:msg "gain 5 [Credits] and draw 2 cards"
-    :effect (effect (gain :credit 5) (draw 2))}
+    :effect (effect (gain :credit 5) (draw 2) (play-sfx "hedge-fund"))}
 
    "Casting Call"
    {:choices {:req #(and (is-type? % "Agenda")
@@ -151,7 +151,7 @@
    {:choices {:max 5 :req #(and (:side % "Corp")
                                 (in-hand? %))}
     :msg (msg "reveal " (join ", " (map :title targets)) " and gain " (* 2 (count targets)) " [Credits]")
-    :effect (effect (gain :credit (* 2 (count targets))))}
+    :effect (effect (gain :credit (* 2 (count targets))) (play-sfx "hedge-fund"))}
 
    "Cerebral Cast"
    {:req (req (:successful-run runner-reg))
@@ -178,7 +178,7 @@
    "Commercialization"
    {:msg (msg "gain " (or (:advance-counter target) 0) " [Credits]")
     :choices {:req ice?}
-    :effect (effect (gain :credit (or (:advance-counter target) 0)))}
+    :effect (effect (gain :credit (or (:advance-counter target) 0)) (play-sfx "hedge-fund"))}
 
    "Corporate Shuffle"
    {:msg "shuffle all cards in HQ into R&D and draw 5 cards"
@@ -209,7 +209,8 @@
    "Diversified Portfolio"
    {:msg (msg "gain " (count (filter #(not (empty? %)) (map #(:content (second %)) (get-remotes @state))))
               " [Credits]")
-    :effect (effect (gain :credit (count (filter #(not (empty? %)) (map #(:content (second %)) (get-remotes @state))))))}
+    :effect (effect (gain :credit (count (filter #(not (empty? %)) (map #(:content (second %)) (get-remotes @state)))))
+                    (play-sfx "hedge-fund"))}
 
    "Fast Track"
    {:prompt "Choose an Agenda"
@@ -237,7 +238,7 @@
 
    "Green Level Clearance"
    {:msg "gain 3 [Credits] and draw 1 card"
-    :effect (effect (gain :credit 3) (draw))}
+    :effect (effect (gain :credit 3) (draw) (play-sfx "hedge-fund"))}
 
    "Hedge Fund"
    {:msg "gain 9 [Credits]" :effect (effect (gain :credit 9)
@@ -301,7 +302,7 @@
 
    "Medical Research Fundraiser"
    {:msg "gain 8 [Credits]. The Runner gains 3 [Credits]"
-    :effect (effect (gain :credit 8) (gain :runner :credit 3))}
+    :effect (effect (gain :credit 8) (gain :runner :credit 3) (play-sfx "hedge-fund"))}
 
    "Midseason Replacements"
    {:req (req (:stole-agenda runner-reg))
@@ -385,7 +386,8 @@
     :effect (effect (gain :credit
                           (reduce (fn [c server]
                                     (+ c (count (filter (fn [ice] (:rezzed ice)) (:ices server)))))
-                                  0 (flatten (seq (:servers corp))))))}
+                                  0 (flatten (seq (:servers corp)))))
+                    (play-sfx "hedge-fund"))}
 
    "Power Grid Overload"
    {:trace {:base 2
@@ -493,7 +495,7 @@
    {:choices {:max 100 :req #(and (:side % "Corp")
                                   (in-hand? %))}
     :msg (msg "trash " (count targets) " card" (if (not= 1 (count targets)) "s") " and gain " (* 2 (count targets)) " [Credits]")
-    :effect (effect (trash-cards targets) (gain :credit (* 2 (count targets))))}
+    :effect (effect (trash-cards targets) (gain :credit (* 2 (count targets))) (play-sfx "hedge-fund"))}
 
    "Rework"
    {:prompt "Choose a card from HQ to shuffle into R&D"
@@ -591,12 +593,14 @@
     :effect (effect (gain :credit 1)
                     (resolve-ability {:once :per-turn :once-key :subliminal-messaging
                                       :msg "gain [Click]"
-                                      :effect (effect (gain :corp :click 1))} card nil))}
+                                      :effect (effect (gain :corp :click 1))} card nil)
+                    (play-sfx "hypnotoad"))}
 
    "Successful Demonstration"
    {:req (req (:unsuccessful-run runner-reg))
     :msg "gain 7 [Credits]"
-    :effect (effect (gain :credit 7))}
+    :effect (effect (gain :credit 7)
+                    (play-sfx "hedge-fund"))}
 
    "Sunset"
    (letfn [(sun [serv]
@@ -614,7 +618,8 @@
                      (resolve-ability state side (sun serv) card nil)))})
 
    "Sweeps Week"
-   {:effect (effect (gain :credit (count (:hand runner))))
+   {:effect (effect (gain :credit (count (:hand runner)))
+                    (play-sfx "hedge-fund"))
     :msg (msg "gain " (count (:hand runner)) " [Credits]")}
 
    "Targeted Marketing"
@@ -626,12 +631,14 @@
                                       (not= (first (:zone %)) :discard)
                                       (not (is-type? % "Identity")))}
                  :msg (msg "gain 10 [Credits] from the Runner playing " (:title target))
-                 :effect (effect (gain :credit 10))}
+                 :effect (effect (gain :credit 10)
+                                 (play-sfx "hedge-fund"))}
                 {:req (req (and (= (:zone card) [:current])
                                 (is-type? (last (:discard runner)) "Event")))
                  :label "Gain 10 [Credits] because the Runner played the named Event"
                  :msg (msg "gain 10 [Credits] from the Runner playing " (:title (last (:discard runner))))
-                 :effect (effect (gain :credit 10))}]}
+                 :effect (effect (gain :credit 10)
+                                 (play-sfx "hedge-fund"))}]}
 
    "The All-Seeing I"
    (let [trash-all-resources {:player :runner
