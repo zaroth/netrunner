@@ -27,7 +27,7 @@
                                 state side
                                 {:msg (msg "trash " (:title target) " and gain 3 [Credits]")
                                  :choices {:req #(and (card-is? % :side :runner) (installed? %) (not (card-is? % :cid (:cid card))))}
-                                 :effect (effect (gain :credit 3) (trash target {:unpreventable true}))}
+                                 :effect (effect (gain :credit 3) (trash target {:unpreventable true}) (play-sfx "hedge-fund"))}
                                card nil))}]}
 
    "Akshara Sareen"

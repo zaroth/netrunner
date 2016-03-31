@@ -176,6 +176,7 @@
 
    "Desperado"
    {:in-play [:memory 1]
+    :effect (effect (play-sfx "desperado"))
     :events {:successful-run {:msg "gain 1 [Credits]" :effect (effect (gain :credit 1))}}}
 
    "Dinosaurus"

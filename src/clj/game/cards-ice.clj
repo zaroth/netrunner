@@ -1009,4 +1009,5 @@
 
    "Zed 1.0"
    {:abilities [(do-brain-damage 1)]
-    :effect (effect (play-sfx "zed"))}})
+    :effect (effect (play-sfx "zed"))
+    :trash-effect {:effect (effect (play-sfx "zed-dead"))}}})

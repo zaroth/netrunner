@@ -839,6 +839,7 @@
                            (audio-sfx "click-credit-mario")
                            (audio-sfx "click-run")
                            (audio-sfx "diesel")
+                           (audio-sfx "desperado")
                            (audio-sfx "eater")
                            (audio-sfx "emergency-shutdown")
                            (audio-sfx "eve")
@@ -851,8 +852,10 @@
                            (audio-sfx "hypnotoad")
                            (audio-sfx "ive-had-worse")
                            (audio-sfx "jack-out")
+                           (audio-sfx "jackson")
                            (audio-sfx "marcus-batty")
                            (audio-sfx "morning-star")
+                           (audio-sfx "net-celebrity")
                            (audio-sfx "paper-tripping")
                            (audio-sfx "purge")
                            (audio-sfx "scorch")
@@ -861,6 +864,7 @@
                            (audio-sfx "shock")
                            (audio-sfx "siphon")
                            (audio-sfx "snare")
+                           (audio-sfx "spooned")
                            (audio-sfx "stimhack")
                            (audio-sfx "trace")
                            (audio-sfx "traffic-accident")
@@ -868,7 +872,8 @@
                            (audio-sfx "viktor-2")
                            (audio-sfx "wasted")
                            (audio-sfx "wilhelm")
-                           (audio-sfx "zed")))}))
+                           (audio-sfx "zed")
+                           (audio-sfx "zed-dead")))}))
 
     om/IWillMount
     (will-mount [this]

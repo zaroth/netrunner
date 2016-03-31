@@ -486,7 +486,8 @@
     :effect (effect (install-cost-bonus [:credit -3]) (runner-install target))}
 
    "Net Celebrity"
-   {:recurring 1}
+   {:effect (effect (play-sfx "net-celebrity"))
+    :recurring 1}
 
    "Networking"
    {:msg "remove 1 tag"
@@ -681,7 +682,8 @@
     :choices (req (cancellable (filter #(has-subtype? % "Icebreaker") (:deck runner)) :sorted))}
 
    "Spooned"
-   {:prompt "Choose a server" :choices (req runnable-servers) :effect (effect (run target nil card))}
+   {:prompt "Choose a server" :choices (req runnable-servers) :effect (effect (run target nil card)
+                                                                              (play-sfx "spooned"))}
 
    "Stimhack"
    {:prompt "Choose a server" :choices (req runnable-servers)

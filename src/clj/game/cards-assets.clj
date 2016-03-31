@@ -416,7 +416,8 @@
                :runner-turn-ends it :corp-turn-ends it})}
 
    "Jackson Howard"
-   {:abilities [{:cost [:click 1] :effect (effect (draw 2)) :msg "draw 2 cards"}
+   {:effect (effect (play-sfx "jackson"))
+    :abilities [{:cost [:click 1] :effect (effect (draw 2)) :msg "draw 2 cards"}
                 {:label "Shuffle up to 3 cards from Archives into R&D"
                  :effect (effect
                           (move card :rfg)
