@@ -162,19 +162,6 @@
 
 (defn player-view [cursor]
   (om/component
-   (sab/html
-    [:span.player
-     (om/build avatar (:user cursor) {:opts {:size 22}})
-     (:username (:user cursor))
-     (let [side (:side cursor)
-           faction (:faction cursor)
-           identity (:identity cursor)]
-       (cond
-         (and (some? faction) (not= "Neutral" faction)) (faction-icon faction identity)
-         side [:span.side (str "(" side ")")]))])))
-
-(defn player-long-view [cursor]
-  (om/component
     (sab/html
       [:span.player
        (om/build avatar (:user cursor) {:opts {:size 22}})
@@ -301,7 +288,7 @@
                  [:div.players
                   (for [player (:players game)]
                     [:div
-                     (om/build player-long-view player)
+                     (om/build player-view player)
                      (when-let [deck (:deck player)]
                        [:span {:class (deck-status-label deck)}
                         [:span.label
@@ -318,7 +305,7 @@
                     (let [c (count (:spectators game))]
                      [:h3 (str c " Spectator" (when (> c 1) "s"))])
                     (for [spectator (:spectators game)]
-                      (om/build player-long-view spectator))])]
+                      (om/build player-view spectator))])]
                 (om/build chat-view messages {:state state})])))]
         (om/build deckselect-modal cursor)]))))
 
